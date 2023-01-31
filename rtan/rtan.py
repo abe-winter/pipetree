@@ -1,14 +1,5 @@
-import dis, inspect, ast, textwrap
-from typing import Iterable, Tuple
-
-def returns(fn):
-    "get instructions of fn's bytecode, return a list of reverse iterators for each"
-    instrs = list(dis.get_instructions(fn))
-    return_indices = []
-    for i, inst in enumerate(instrs):
-        if inst.opname == 'RETURN_VALUE':
-            return_indices.append(i)
-    return [instrs[i::-1] for i in return_indices]
+import inspect, ast, textwrap
+from typing import Iterable
 
 def ast_returns(fn: callable) -> Iterable[ast.Return]:
     "get ast.Returns for function"
@@ -24,7 +15,7 @@ def expr_type(expr: ast.AST, globals_: dict, params: dict | None = None):
     Careful: this is wrong in a bunch of cases, and mainly exists to find enums.
     """
     match expr:
-        case int(): return int
+        case int() | None: return type(expr)
         case ast.Attribute():
             if isinstance(expr.value, ast.Name):
                 return getattr(globals_[expr.value.id], expr.attr)
@@ -43,4 +34,9 @@ def expr_type(expr: ast.AST, globals_: dict, params: dict | None = None):
             # recursive case
             return expr_type(child, globals_, params)
         case _:
-            raise UnhandledType(ast.unparse(expr), expr)
+            unparsed = 'CANT_UNPARSE'
+            try:
+                unparsed = ast.unparse(expr)
+            except:
+                pass
+            raise UnhandledType(unparsed, expr)

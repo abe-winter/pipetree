@@ -1,5 +1,5 @@
 import enum, ast, inspect
-from rtan.rtan import returns, ast_returns, expr_type
+from rtan.rtan import ast_returns, expr_type
 
 def returner(x):
     "I return ints"
@@ -20,10 +20,8 @@ def tuple_returner(x):
     else:
         return (Case.b, x)
 
-def test_returns():
-    rets = returns(returner)
-    assert len(rets) == 2
-    assert all(ret[0].opname == 'RETURN_VALUE' for ret in rets)
+def null_returner():
+    return None
 
 def test_ast_returns():
     rets = list(ast_returns(returner))
@@ -36,6 +34,7 @@ def test_expr_type():
     for ret in ast_returns(returner):
         assert expr_type(ret, globals()) is int
     assert [expr_type(ret, globals()) for ret in ast_returns(enum_returner)] == [Case.a]
+    assert [expr_type(ret, globals()) for ret in ast_returns(null_returner)] == [type(None)]
 
     params = inspect.signature(tuple_returner).parameters
     for ret in ast_returns(tuple_returner):
