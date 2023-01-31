@@ -1,5 +1,7 @@
-import inspect, ast, textwrap, warnings, types
+import inspect, ast, textwrap, warnings, types, logging
 from typing import Iterable, Generator
+
+logger = logging.getLogger(__name__)
 
 class LambdaParseError(Exception):
     "case we can't parse"
@@ -21,7 +23,8 @@ def ast_returns(fn: callable) -> Iterable[ast.Return]:
         try:
             tree = ast.parse(source)
         except SyntaxError:
-            warnings.warn(f"trying to recover a bad parse for {source}, but this is brittle and slightly dangerous")
+            logger.debug('about to recover from bad parse for %s', source)
+            warnings.warn(f"trying to recover a bad parse, but this is brittle")
             tree = ast.parse(source[source.index('lambda'):])
         lambdas = [node for node in ast.walk(tree) if isinstance(node, ast.Lambda)]
         if len(lambdas) != 1:

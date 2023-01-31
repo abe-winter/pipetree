@@ -1,4 +1,4 @@
-import enum
+import enum, asyncio
 from rtan.pipetree import PipeTree
 
 class TreeEnum(enum.Enum):
@@ -35,3 +35,16 @@ def test_pt_graph():
 def test_pt_check():
     # exercise-only
     pt.check_graph(globals())
+
+def test_run():
+    n = 1000
+    counter = asyncio.run(pt.run(range(n)))
+    assert counter == {
+        (TreeEnum.start, TreeEnum.lookup): 3 * n / 4,
+        (TreeEnum.start, TreeEnum.apply): n / 4,
+        (TreeEnum.lookup, TreeEnum.slow_lookup): n / 2,
+        (TreeEnum.lookup, TreeEnum.insert): n / 4,
+        (TreeEnum.slow_lookup, TreeEnum.insert): n / 2,
+        (TreeEnum.insert, TreeEnum.apply): 3 * n / 4,
+        (TreeEnum.apply, None): n,
+    }

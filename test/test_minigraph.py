@@ -7,6 +7,7 @@ cyclic = Minigraph([
     ('c', 'd'),
     ('c', 'b'),
 ])
+cyc2 = Minigraph(['xy', 'yy'])
 converge = Minigraph([
     ('a', 'b'),
     ('a', 'c'),
@@ -25,6 +26,7 @@ def test_cycles():
     assert not list(mg.cycles())
     assert list(cyclic.cycles()) == [('b', 'c', 'b')]
     assert not list(converge.cycles())
+    assert list(cyc2.cycles()) == [('y', 'y')]
 
 def test_to_dot():
     # exercise-only
