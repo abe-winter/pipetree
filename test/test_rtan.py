@@ -1,5 +1,6 @@
 import enum, ast, inspect
-from rtan.rtan import ast_returns, expr_type
+import pytest
+from rtan.rtan import ast_returns, expr_type, LambdaParseError
 
 def returner(x):
     "I return ints"
@@ -23,6 +24,13 @@ def tuple_returner(x):
 def null_returner():
     return None
 
+LAMBDA = lambda x: 121
+FUNC_DICT_BAD = {Case.a: lambda x: 122, Case.b: lambda x: 123}
+FUNC_DICT_GOOD = {
+    Case.a: lambda x: 122,
+    Case.b: lambda x: 123,
+}
+
 def test_ast_returns():
     rets = list(ast_returns(returner))
     assert len(rets) == 3
@@ -41,3 +49,9 @@ def test_expr_type():
         sig = expr_type(ret, globals(), params)
         assert isinstance(sig, tuple) and len(sig) == 2
         assert tuple(map(type, sig)) == (Case, inspect.Parameter)
+
+def test_lambda():
+    assert isinstance(ast_returns(LAMBDA)[0], ast.Constant)
+    with pytest.raises(LambdaParseError):
+        ast_returns(FUNC_DICT_BAD[Case.b])
+    assert [expr_type(ret, globals()) for ret in ast_returns(FUNC_DICT_GOOD[Case.b])] == [int]

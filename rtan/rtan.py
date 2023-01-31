@@ -1,10 +1,26 @@
-import inspect, ast, textwrap
+import inspect, ast, textwrap, warnings
 from typing import Iterable
+
+class LambdaParseError(Exception):
+    "case we can't parse"
 
 def ast_returns(fn: callable) -> Iterable[ast.Return]:
     "get ast.Returns for function"
     # todo: add option to filter to direct returns, i.e. ignore like lambda in filter(), or other subdefs
-    tree = ast.parse(textwrap.dedent(inspect.getsource(fn)))
+    source = textwrap.dedent(inspect.getsource(fn))
+    if fn.__name__ == '<lambda>':
+        # todo: this may choke on cases where lambdas nest
+        # todo: can I use col_offset to match the function?
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            warnings.warn(f"trying to recover a bad parse for {source}, but this is brittle and slightly dangerous")
+            tree = ast.parse(source[source.index('lambda'):])
+        lambdas = [node for node in ast.walk(tree) if isinstance(node, ast.Lambda)]
+        if len(lambdas) != 1:
+            raise LambdaParseError(f"we can't parse multiple lambdas on a single line -- please fix {source}")
+        return [lambdas[0].body]
+    tree = ast.parse(source)
     return filter(lambda node: isinstance(node, ast.Return), ast.walk(tree))
 
 class UnhandledType(NotImplementedError):
