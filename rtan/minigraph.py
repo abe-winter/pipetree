@@ -71,14 +71,14 @@ class Minigraph:
         return "digraph {\n" + '\n'.join(f'  "{self.node_to_key(a)}" -> "{self.node_to_key(b)}"' for a, b in self.edges) + "\n}"
 
 KeyType = TypeVar('KeyType')
-def walk_outlinks(start: KeyType, links: Dict[KeyType, List[KeyType]], seen: Set[KeyType], limiter: int) -> Generator: # Generator[Tuple[KeyType, KeyType]]:
+def walk_outlinks(start: KeyType, links: Dict[KeyType, List[KeyType]], seen: Set[KeyType], limiter: int, stack: Tuple[KeyType] = ()) -> Generator: # Generator[Tuple[KeyType, KeyType]]:
     "helper for Minigraph.cycles(). limiter should start as # edges"
     limiter -= 1
     if limiter < 0:
         raise LoopError
-    seen.add(start)
+    stack = stack + (start,)
     for dest in links[start]:
-        if dest in seen:
-            yield (start, dest)
+        if dest in stack:
+            yield stack[stack.index(dest):] + (dest,)
         else:
-            yield from walk_outlinks(dest, links, seen, limiter)
+            yield from walk_outlinks(dest, links, seen, limiter, stack)

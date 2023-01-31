@@ -7,6 +7,12 @@ cyclic = Minigraph([
     ('c', 'd'),
     ('c', 'b'),
 ])
+converge = Minigraph([
+    ('a', 'b'),
+    ('a', 'c'),
+    ('b', 'd'),
+    ('c', 'd'),
+])
 
 def test_degree():
     assert set(mg.degrees()) == {Degree('x', 0, 1), Degree('y', 1, 0)}
@@ -17,7 +23,8 @@ def test_outlinks():
 
 def test_cycles():
     assert not list(mg.cycles())
-    assert list(cyclic.cycles()) == [('c', 'b')]
+    assert list(cyclic.cycles()) == [('b', 'c', 'b')]
+    assert not list(converge.cycles())
 
 def test_to_dot():
     # exercise-only
