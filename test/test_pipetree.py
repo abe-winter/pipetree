@@ -1,5 +1,5 @@
 import enum, asyncio
-from rtan.pipetree import PipeTree
+from pipetree.pipetree import PipeTree
 
 class TreeEnum(enum.Enum):
     start = 0

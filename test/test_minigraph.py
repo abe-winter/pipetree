@@ -1,4 +1,4 @@
-from rtan.minigraph import Minigraph, SourceSink, Degree
+from pipetree.minigraph import Minigraph, SourceSink, Degree
 
 mg = Minigraph([('x', 'y')])
 cyclic = Minigraph([

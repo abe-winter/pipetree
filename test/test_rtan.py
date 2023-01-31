@@ -1,6 +1,6 @@
 import enum, ast, inspect
 import pytest
-from rtan.rtan import ast_returns, expr_type, LambdaParseError
+from pipetree.rtan import ast_returns, expr_type, LambdaParseError
 
 def returner(x):
     "I return ints"
