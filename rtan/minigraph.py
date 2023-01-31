@@ -68,7 +68,7 @@ class Minigraph:
     def to_dot(self) -> str:
         "convert to graphviz format"
         # todo: figure out escaping for spaces etc
-        return "digraph {\n" + '\n'.join(f'  {self.node_to_key(a)} -> {self.node_to_key(b)}' for a, b in self.edges) + "\n}"
+        return "digraph {\n" + '\n'.join(f'  "{self.node_to_key(a)}" -> "{self.node_to_key(b)}"' for a, b in self.edges) + "\n}"
 
 KeyType = TypeVar('KeyType')
 def walk_outlinks(start: KeyType, links: Dict[KeyType, List[KeyType]], seen: Set[KeyType], limiter: int) -> Generator: # Generator[Tuple[KeyType, KeyType]]:

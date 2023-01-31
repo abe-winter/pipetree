@@ -34,7 +34,7 @@ FUNC_DICT_GOOD = {
 def test_ast_returns():
     rets = list(ast_returns(returner))
     assert len(rets) == 3
-    assert {ret.value.value for ret in rets} == {1, 2, 3}
+    assert {ret.value for ret in rets} == {1, 2, 3}
     assert len(list(ast_returns(enum_returner))) == 1
     assert len(list(ast_returns(tuple_returner))) == 2
 
@@ -42,7 +42,7 @@ def test_expr_type():
     for ret in ast_returns(returner):
         assert expr_type(ret, globals()) is int
     assert [expr_type(ret, globals()) for ret in ast_returns(enum_returner)] == [Case.a]
-    assert [expr_type(ret, globals()) for ret in ast_returns(null_returner)] == [type(None)]
+    assert [expr_type(ret, globals()) for ret in ast_returns(null_returner)] == [None]
 
     params = inspect.signature(tuple_returner).parameters
     for ret in ast_returns(tuple_returner):
@@ -51,7 +51,8 @@ def test_expr_type():
         assert tuple(map(type, sig)) == (Case, inspect.Parameter)
 
 def test_lambda():
-    assert isinstance(ast_returns(LAMBDA)[0], ast.Constant)
+    print(list(ast_returns(LAMBDA)))
+    assert isinstance(list(ast_returns(LAMBDA))[0], ast.Constant)
     with pytest.raises(LambdaParseError):
-        ast_returns(FUNC_DICT_BAD[Case.b])
+        list(ast_returns(FUNC_DICT_BAD[Case.b]))
     assert [expr_type(ret, globals()) for ret in ast_returns(FUNC_DICT_GOOD[Case.b])] == [int]
