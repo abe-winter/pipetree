@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pipenv
-          pipenv sync -d
+          pipenv sync -d --system
       - name: Test with pytest
         run: |
           pytest
