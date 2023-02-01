@@ -2,11 +2,15 @@
 
 Toy type-aware cascading process streamer for python. The intended use is for smallish task graphs that are IO bound and can run in a single process.
 
-This provides 'structured concurrency' aka your fast items stream quickly to the end, your slow items finish at their own pace, and different fast and slow cases can run in parallel.
+This provides 'structured concurrency', which means:
+- your fast items stream quickly to the end
+- your slow items finish at their own pace
+- different fast and slow cases can run in parallel
+- output order isn't guaranteed
 
 (Warning: don't try to install this from pypi -- there is another package with this name).
 
-This graphviz dotfile is generated automatically from the example in the test suite:
+This graphviz dotfile is generated automatically from code:
 
 ![graphviz graph generated from test suite](./pipetree.dot.png)
 
@@ -42,5 +46,6 @@ PipeTree will do the following for you:
 - check that this is a DAG (i.e. no dangerous cycles)
 - run this in-process using asyncio.Queue to glue parallel tasks together
 - generate a nice graph (see above)
+- for a given run, produce counts for each edge in the graph
 
 If you want to run cascading processes like this in a high-stakes prod context though, you should probably look at rxpy.
